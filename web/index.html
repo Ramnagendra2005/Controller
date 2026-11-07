@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>PhonePad</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-layout="standard">
+
+<main id="pad">
+  <!-- ── shoulders / triggers ─────────────────────────────── -->
+  <div class="ctl trig" id="LT" data-ctl="btn" data-trig="LT"><span class="fill"></span><b>LT</b></div>
+  <div class="ctl shoulder" id="LB" data-ctl="btn" data-btn="LB"><b>LB</b></div>
+  <div class="ctl shoulder" id="RB" data-ctl="btn" data-btn="RB"><b>RB</b></div>
+  <div class="ctl trig" id="RT" data-ctl="btn" data-trig="RT"><span class="fill"></span><b>RT</b></div>
+
+  <!-- ── top centre: status + utility ─────────────────────── -->
+  <div id="topcenter">
+    <div id="status"><i class="dot"></i><span id="statusText">Connecting…</span><span id="ping"></span></div>
+    <button class="ui icon" id="recenter" title="Re-centre tilt">
+      <svg viewBox="0 0 24 24"><path d="M12 5V2L8 6l4 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>
+    </button>
+    <button class="ui icon" id="gear" title="Settings">
+      <svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7 7 0 0 0-1.7-1L15 3h-4l-.4 2.9a7 7 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7 7 0 0 0 1.7 1L11 21h4l.4-2.9a7 7 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg>
+    </button>
+  </div>
+
+  <!-- ── back / guide / start ─────────────────────────────── -->
+  <div class="ctl small" id="BACK"  data-ctl="btn" data-btn="BACK"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="11" height="9" rx="1.5"/><rect x="9" y="4" width="11" height="9" rx="1.5"/></svg></div>
+  <div class="ctl small" id="GUIDE" data-ctl="btn" data-btn="GUIDE"><svg viewBox="0 0 24 24"><path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5z"/></svg></div>
+  <div class="ctl small" id="START" data-ctl="btn" data-btn="START"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+
+  <!-- ── sticks ───────────────────────────────────────────── -->
+  <div class="zone" id="lzone" data-ctl="stick" data-stick="L">
+    <div class="base"><div class="ring"></div><div class="knob"></div></div>
+  </div>
+  <div class="zone" id="rzone" data-ctl="stick" data-stick="R">
+    <div class="base"><div class="ring"></div><div class="knob"></div></div>
+  </div>
+  <div class="ctl small stickclick" id="L3" data-ctl="btn" data-btn="L3"><b>L3</b></div>
+  <div class="ctl small stickclick" id="R3" data-ctl="btn" data-btn="R3"><b>R3</b></div>
+
+  <!-- ── d-pad (one element, 8-way by finger position) ────── -->
+  <div class="ctl" id="dpad" data-ctl="dpad">
+    <span class="arm up"></span><span class="arm right"></span>
+    <span class="arm down"></span><span class="arm left"></span>
+    <span class="hub"></span>
+  </div>
+
+  <!-- ── face buttons ─────────────────────────────────────── -->
+  <div id="abxy">
+    <div class="ctl face" id="Y" data-ctl="btn" data-btn="Y"><b>Y</b></div>
+    <div class="ctl face" id="X" data-ctl="btn" data-btn="X"><b>X</b></div>
+    <div class="ctl face" id="B" data-ctl="btn" data-btn="B"><b>B</b></div>
+    <div class="ctl face" id="A" data-ctl="btn" data-btn="A"><b>A</b></div>
+  </div>
+
+  <!-- ── racing-only ──────────────────────────────────────── -->
+  <div class="ctl pedal" id="brake" data-ctl="pedal" data-pedal="LT">
+    <span class="fill"></span><span class="ticks"></span><b>BRAKE</b><em>LT</em><span class="pct">0%</span>
+  </div>
+  <div class="ctl pedal" id="gas" data-ctl="pedal" data-pedal="RT">
+    <span class="fill"></span><span class="ticks"></span><b>GAS</b><em>RT</em><span class="pct">0%</span>
+  </div>
+  <div id="wheel" title="Tap to re-centre">
+    <svg viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="42" class="rim"/>
+      <path d="M50 50 L12 44 M50 50 L88 44 M50 50 L50 90" class="spoke"/>
+      <circle cx="50" cy="50" r="11" class="hubc"/>
+      <path d="M50 8 L50 16" class="mark"/>
+    </svg>
+    <span id="wheelVal">0°</span>
+  </div>
+  <div class="ctl" id="strip" data-ctl="strip"><span class="track"></span><span class="thumb"></span><b>◀ STEER ▶</b></div>
+</main>
+
+<!-- ── overlays ───────────────────────────────────────────── -->
+<section id="start" class="overlay">
+  <div class="card">
+    <h1>Phone<span>Pad</span></h1>
+    <p id="startMode">Wireless controller</p>
+    <button id="startBtn">Tap to start</button>
+    <p class="hint">Goes full-screen &amp; landscape · keeps the screen awake</p>
+  </div>
+</section>
+
+<section id="conn" class="overlay" hidden>
+  <div class="card"><div class="spinner"></div><p id="connText">Connecting to PC…</p></div>
+</section>
+
+<section id="rotate" class="overlay">
+  <div class="card"><div class="phone-rot"></div><p>Rotate your phone to landscape</p></div>
+</section>
+
+<section id="settings" class="overlay" hidden>
+  <div class="sheet">
+    <header><h2>Settings</h2><button class="ui" id="closeSettings">Done</button></header>
+    <div id="settingsBody"></div>
+  </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!-- MILESTONE 2 — the phone side: one button + a live latency meter -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Make the page fit the phone screen and stop pinch-zoom from stealing touches -->
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Pad – M2</title>
+<style>
+  body { margin:0; height:100vh; display:flex; flex-direction:column;
+         align-items:center; justify-content:center; gap:24px;
+         background:#111; color:#eee; font-family:system-ui, sans-serif;
+         user-select:none; -webkit-user-select:none; touch-action:none; }
+  #status { font-size:18px; }
+  #rtt    { font-size:28px; font-variant-numeric:tabular-nums; }
+  #btnA   { width:160px; height:160px; border-radius:50%; border:none;
+            background:#2a9d4b; color:#fff; font-size:56px; font-weight:bold; }
+  #btnA.down { background:#5fe08a; transform:scale(0.94); }
+</style>
+</head>
+<body>
+  <div id="status">Connecting…</div>
+  <div id="rtt">– ms</div>
+  <button id="btnA">A</button>
+
+<script>
+// CONCEPT 1: open the WebSocket to the SAME host that served this page.
+// location.host = "192.168.x.x:8080", so we never hard-code the PC's IP.
+const ws = new WebSocket(`ws://${location.host}/ws`);
+const statusEl = document.getElementById("status");
+const rttEl    = document.getElementById("rtt");
+const btn      = document.getElementById("btnA");
+
+ws.onopen  = () => statusEl.textContent = "✅ Connected";
+ws.onclose = () => statusEl.textContent = "❌ Disconnected (refresh)";
+
+// CONCEPT 2: send a small JSON message. JSON = text format both
+// JavaScript and Python understand: {"t":"btn","down":true}
+function send(obj) {
+  if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
+}
+
+// CONCEPT 3: touch events, not click events.
+// "click" fires only AFTER you lift your finger (and may wait ~300 ms).
+// A controller needs to know the instant you press AND the instant you release.
+// pointerdown / pointerup fire immediately for touch, mouse and pen alike.
+btn.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  btn.classList.add("down");
+  send({ t: "btn", down: true });
+});
+for (const ev of ["pointerup", "pointercancel", "pointerleave"]) {
+  btn.addEventListener(ev, () => {
+    if (!btn.classList.contains("down")) return;
+    btn.classList.remove("down");
+    send({ t: "btn", down: false });
+  });
+}
+
+// CONCEPT 4: latency meter. performance.now() is a high-precision clock (ms).
+// Send our time, server echoes it, the difference is the round trip.
+ws.onmessage = ev => {
+  const msg = JSON.parse(ev.data);
+  if (msg.t === "ping") {
+    const rtt = performance.now() - msg.ts;
+    rttEl.textContent = `${rtt.toFixed(1)} ms round-trip`;
+  }
+};
+setInterval(() => send({ t: "ping", ts: performance.now() }), 500);
+</script>
+</body>
+</html>
